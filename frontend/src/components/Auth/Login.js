@@ -5,28 +5,30 @@ import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from 'react-icons/fa';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import './Login.css';
-import agriLogo from './logo.png'; // ✅ Import your image
+import agriLogo from './logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // Remember Me state
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Retrieve saved login data from localStorage
     const savedEmail = localStorage.getItem('savedEmail');
     const savedPassword = localStorage.getItem('savedPassword');
     const savedRemember = localStorage.getItem('rememberMe') === 'true';
 
     if (savedEmail && savedPassword && savedRemember) {
       setFormData({ email: savedEmail, password: savedPassword });
-      setRememberMe(true);
+      setRememberMe(true); // If remember me was checked, auto-check the box
     }
   }, []);
 
+  // Validate form inputs
   const validate = () => {
     const newErrors = {};
     if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
@@ -54,11 +56,13 @@ const Login = () => {
       const token = res.data.token;
 
       if (rememberMe) {
+        // Save credentials to localStorage if "Remember Me" is checked
         localStorage.setItem('token', token);
         localStorage.setItem('savedEmail', formData.email);
         localStorage.setItem('savedPassword', formData.password);
         localStorage.setItem('rememberMe', true);
       } else {
+        // Use sessionStorage and clear saved credentials if "Remember Me" is not checked
         sessionStorage.setItem('token', token);
         localStorage.removeItem('savedEmail');
         localStorage.removeItem('savedPassword');
@@ -73,6 +77,7 @@ const Login = () => {
     setLoading(false);
   };
 
+  // Handle Google login
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
@@ -134,14 +139,15 @@ const Login = () => {
           </div>
 
           <div className="extras">
-            <label>
+            <label className="remember-me">
               <input
                 type="checkbox"
                 checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
-              /> Remember Me
+                onChange={() => setRememberMe(prevState => !prevState)} // Proper state toggling
+              />
+              Remember Me
             </label>
-            <a href="/forgot-password">Forgot Password?</a>
+            <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
           </div>
 
           <button type="submit" className="login-button" disabled={loading}>
