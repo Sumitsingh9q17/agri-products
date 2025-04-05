@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import './Signup.css';
-import agriLogo from './logo.png'; // ✅ Import your image
+import agriLogo from './logo.png';
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
@@ -15,47 +15,35 @@ const Signup = () => {
 
   const validate = () => {
     const newErrors = {};
-    const password = formData.password;
-    const confirmPassword = formData.confirmPassword;
+    const { name, email, password, confirmPassword } = formData;
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
-      newErrors.email = "Enter a valid email";
-    }
-
-    if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "Password must contain at least one uppercase letter";
-    } else if (!/\d/.test(password)) {
-      newErrors.password = "Password must contain at least one number";
-    } else if (!/[@$!%*?&]/.test(password)) {
-      newErrors.password = "Password must contain at least one special character (@$!%*?&)";
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.match(/^\S+@\S+\.\S+$/)) newErrors.email = 'Enter a valid email';
+    if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (!/[A-Z]/.test(password)) newErrors.password = 'Password must contain at least one uppercase letter';
+    if (!/\d/.test(password)) newErrors.password = 'Password must contain at least one number';
+    if (!/[@$!%*?&]/.test(password)) newErrors.password = 'Password must contain at least one special character (@$!%*?&)';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Remove error for the field being typed in
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
       await axios.post('http://localhost:5000/api/auth/signup', formData);
-      setMessage("Registered successfully! Redirecting...");
+      setMessage('Registered successfully! Redirecting...');
       setTimeout(() => navigate('/login'), 1500);
     } catch (error) {
       setMessage(error.response?.data?.message || 'Something went wrong');
@@ -75,82 +63,65 @@ const Signup = () => {
 
           {/* Full Name Input */}
           <div className="input-box">
-        <FaUser className="input-icon" />
-
+            <FaUser className="input-icon" />
             <input
               type="text"
-              id="fullName"
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder=" "
+              placeholder="Full Name"
             />
-            <label htmlFor="fullName">Full Name</label>
-            <i className="input-icon fas fa-user"></i>
+            {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
 
           {/* Email Input */}
           <div className="input-box">
-        <FaEnvelope className="input-icon" />
-
+            <FaEnvelope className="input-icon" />
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder=" "
+              placeholder="Email Address"
             />
-            <label htmlFor="email">Email Address</label>
-            <i className="input-icon fas fa-envelope"></i>
+            {errors.email && <p className="error-text">{errors.email}</p>}
           </div>
 
           {/* Password Input */}
           <div className="input-box">
-                    <FaLock className="input-icon" />
-
+            <FaLock className="input-icon" />
             <input
               type={showPassword ? 'text' : 'password'}
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder=" "
+              placeholder="Password"
             />
-            <label htmlFor="password">Password</label>
-            <i className="input-icon fas fa-lock"></i>
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="eye-icon">
-              {showPassword ? <FaEyeSlash /> : <FaEye /> }
-            </button>
+            <span className="toggle-eye" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+            {errors.password && <p className="error-text">{errors.password}</p>}
           </div>
 
           {/* Confirm Password Input */}
           <div className="input-box">
-          <FaLock className="input-icon" />
-
+            <FaLock className="input-icon" />
             <input
               type={showConfirmPassword ? 'text' : 'password'}
-              id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              placeholder=" "
+              placeholder="Confirm Password"
             />
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <i className="input-icon fas fa-lock"></i>
-            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="eye-icon">
+            <span className="toggle-eye" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+            </span>
+            {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
           </div>
-
-          {/* Error Messages */}
-          {Object.keys(errors).map((key) => (
-            <p key={key} className="error-text">{errors[key]}</p>
-          ))}
 
           {/* Signup Button */}
           <button type="submit" className="signup-button">Sign Up</button>

@@ -113,20 +113,39 @@
 /* Input Fields */
 .input-box {
     position: relative;
-    margin-bottom: 30px;
-}
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
 
-.input-box input {
+  .input-wrapper {
+    position: relative;
     width: 100%;
-    padding: 14px 14px 14px 45px; /* Increased left padding for icons */
-    font-size: 16px;
+  }
+
+  .input-box input {
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px; /* Prevent text from overlapping the icon */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
     border: none;
-    border-bottom: 2px solid #ccc;
-    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+  }
+
+  .eye-icon:focus {
     outline: none;
-    transition: all 0.3s ease;
-    border-radius: 6px;
-}
+  }
 
 .input-box input:focus {
     border-color: #4CAF50;
@@ -162,6 +181,17 @@
 .input-box input:focus ~ .input-icon,
 .input-box input:not(:placeholder-shown) ~ .input-icon {
     color: #4CAF50;
+}
+
+
+
+/* Disable hover and focus styles */
+.eye-icon:hover {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
 }
 
 /* Signup Button */
@@ -260,18 +290,4 @@
     .signup-form {
         padding: 30px 25px;
     }
-}
-.eye-icon {
-    background: transparent;
-    border: none;
-    color: #aaa;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.eye-icon:hover {
-    color: #4CAF50;
 }
